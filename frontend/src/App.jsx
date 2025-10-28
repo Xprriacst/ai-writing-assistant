@@ -21,6 +21,7 @@ function App() {
   const [generateTopic, setGenerateTopic] = useState('');
   const [generateLength, setGenerateLength] = useState('medium');
   const [generatedArticle, setGeneratedArticle] = useState('');
+  const [isEditingArticle, setIsEditingArticle] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
@@ -142,6 +143,7 @@ function App() {
         length: generateLength
       });
       setGeneratedArticle(response.data.article);
+      setIsEditingArticle(true);
       showMessage('success', 'Article généré avec succès !');
     } catch (error) {
       const errorMsg = error.response?.data?.detail || 'Erreur lors de la génération';
@@ -408,20 +410,56 @@ function App() {
               {/* Article généré */}
               {generatedArticle && (
                 <div className="mt-8 pt-8 border-t border-gray-200">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold">Article généré</h3>
-                    <button
-                      onClick={downloadArticle}
-                      className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Télécharger
-                    </button>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold">Article généré</h3>
+                      <p className="text-sm text-gray-500">
+                        {isEditingArticle
+                          ? 'Modifiez librement le texte ci-dessous. Vos changements sont automatiquement sauvegardés.'
+                          : 'Vous pouvez éditer l’article pour l’adapter avant de le télécharger.'}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setIsEditingArticle((prev) => !prev)}
+                        className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                          isEditingArticle
+                            ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                            : 'bg-white border border-purple-200 text-purple-600 hover:bg-purple-50'
+                        }`}
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        {isEditingArticle ? 'Terminer l’édition' : 'Modifier le texte'}
+                      </button>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(generatedArticle)}
+                        className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                      >
+                        Copier
+                      </button>
+                      <button
+                        onClick={downloadArticle}
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Télécharger
+                      </button>
+                    </div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-6 max-h-96 overflow-y-auto">
-                    <pre className="whitespace-pre-wrap font-sans text-gray-800">
-                      {generatedArticle}
-                    </pre>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    {isEditingArticle ? (
+                      <textarea
+                        value={generatedArticle}
+                        onChange={(e) => setGeneratedArticle(e.target.value)}
+                        className="w-full min-h-[24rem] bg-white border border-gray-200 rounded-lg p-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-800"
+                      />
+                    ) : (
+                      <div className="max-h-96 overflow-y-auto">
+                        <pre className="whitespace-pre-wrap font-sans text-gray-800">
+                          {generatedArticle}
+                        </pre>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
