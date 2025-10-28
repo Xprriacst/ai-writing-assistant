@@ -11,6 +11,9 @@ ENV/
 .venv
 backend/data/
 
+# Test files with API keys
+test_*.py
+
 # Node
 node_modules/
 dist/
