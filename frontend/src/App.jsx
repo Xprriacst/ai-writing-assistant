@@ -11,7 +11,7 @@ import {
   Download
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'https://ai-writing-assistant-7lkf.onrender.com';
 
 function App() {
   const [activeTab, setActiveTab] = useState('train');
